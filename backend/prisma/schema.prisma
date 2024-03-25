@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Diagnostic {
+  id                Int                @id @default(autoincrement())
+  name              String
+  diagnosticGroup   DiagnosticGroup    @relation(fields: [diagnosticGroupId], references: [id])
+  diagnosticGroupId Int
+  diagnosticMetrics DiagnosticMetric[]
+}
+
+model Condition {
+  id                Int                @id @default(autoincrement())
+  name              String
+  diagnosticMetrics DiagnosticMetric[]
+}
+
+model DiagnosticGroup {
+  id          Int          @id @default(autoincrement())
+  name        String
+  diagnostics Diagnostic[]
+}
+
+model DiagnosticMetric {
+  id            Int         @id @default(autoincrement())
+  name          String
+  oruSonicCodes String?
+  oruSonicUnits String?
+  minAge        Int?
+  maxAge        Int?
+  gender        String?
+  standardLow   Float?
+  standardHigh  Float?
+  everlabLow    Float?
+  everlabHigh   Float?
+  diagnostic    Diagnostic? @relation(fields: [diagnosticId], references: [id])
+  diagnosticId  Int?
+  condition     Condition[]
+}
